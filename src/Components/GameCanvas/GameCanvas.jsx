@@ -17,7 +17,7 @@ const GameCanvas = () => {
   //////loops through collission arrays for the amount of tiles our map is
   const collisionsMap = [];
   for (let i = 0; i < collisions.length; i += 160) {
-    collisionsMap.push(collisions.slice(0, 160 + i));
+    collisionsMap.push(collisions.slice(i, 160 + i));
   }
 
   //image setups
@@ -108,7 +108,7 @@ const GameCanvas = () => {
       }
 
       draw() {
-        context.fillStyle = "rgba(255, 0,0,0)";
+        context.fillStyle = "#FF0000";
         context.fillRect(
           this.position.x,
           this.position.y,
@@ -118,22 +118,22 @@ const GameCanvas = () => {
       }
     }
     const boundaries = [];
-    console.log(collisionsMap, collisions);
-    collisionsMap.forEach((row, i) => {
-      row.forEach((pos, j) => {
+    collisionsMap.map((row, i) => {
+      row.map((pos, j) => {
         if (pos === 1025)
           boundaries.push(
             new Boundary({
               position: {
-                // x: j * Boundary.width + offSet.x,
-                // y: i * Boundary.height + offSet.y,
-                x: j + offSet.x,
-                y: i + offSet.y,
+                x: j * Boundary.width + offSet.x,
+                y: i * Boundary.height + offSet.y,
+                // x: j + offSet.x,
+                // y: i + offSet.y,
               },
             })
           );
       });
     });
+    console.log(boundaries);
 
     //player/map movement class
     class Sprite {
@@ -199,7 +199,7 @@ const GameCanvas = () => {
       //draws background using Sprite constructor
       background.draw();
       //drawing boundaries
-      boundaries.forEach((boundary) => {
+      boundaries.map((boundary) => {
         boundary.draw();
 
         //player collision if else
