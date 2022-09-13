@@ -9,9 +9,9 @@ import left from "../../Assets/playerLeft.png";
 import pokeBattle from "../../Assets/ppokebattle.png";
 import { useEffect, useRef, useLayoutEffect } from "react";
 import styled, { keyframes } from "styled-components";
-import { gsap } from "gsap";
-gsap.registerPlugin();
-gsap.defaults({ overwrite: "auto" });
+// import { gsap, random } from "gsap";
+// gsap.registerPlugin();
+// gsap.defaults({ overwrite: "auto" });
 
 const flash = keyframes`
    from { opacity: 1.0; }
@@ -38,8 +38,34 @@ let ParentDiv = styled.div`
   pointer-events: none;
 `;
 
-const GameCanvas = () => {
+const GameCanvas = ({ pokeApi, battlePoke, setBattlePoke }) => {
   const [battleInitiation, setBattleInitiation] = useState(false);
+
+  const [num, setNum] = useState(1);
+
+  function randomNumberInRange(min, max) {
+    // 👇️ get number between min (inclusive) and max (inclusive)
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      // 👇️ generate random number between 1 and 10
+      setNum(randomNumberInRange(1, 50));
+    }, 1000); // 👈️ runs every 1 second
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, [pokeApi]);
+
+  //////////start here
+  useEffect(() => {
+    setTimeout(() => {
+      setBattlePoke(pokeApi[randomNumberInRange(0, 49)]);
+    }, 2000);
+  }, [battleInitiation]);
+
   // Canvas setup
   const canvasRef = useRef();
   const battleDivRef = useRef();
@@ -332,7 +358,18 @@ const GameCanvas = () => {
             battle.initiated = true;
             player.moving = false;
             setBattleInitiation(true);
+            // console.log(randomPoke);
+            // setBattlePoke(pokeApi[randomNumberInRange(1, 49)]);
             setTimeout(() => {
+              // const opponent = new Sprite({
+              //     position: {
+              //         x:280,
+              //         y:325,
+              //     },
+              //     image:
+
+              // })
+
               animateBattle();
               setBattleInitiation(false);
             }, 1350);

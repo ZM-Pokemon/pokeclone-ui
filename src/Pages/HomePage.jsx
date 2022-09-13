@@ -5,27 +5,29 @@ import { useEffect } from "react";
 import GameCanvas from "../Components/GameCanvas/GameCanvas";
 
 const HomePage = () => {
-  const [wildPokemon, setWildPokemon] = useState([]);
+  //   const [wildPokemon, setWildPokemon] = useState([]);
   const [pokeApi, setPokeApi] = useState();
+  const [battlePoke, setBattlePoke] = useState();
+  //   const wildPoke = [];
 
   useEffect(() => {
     axios
       .get("https://pokeapi.co/api/v2/pokemon?limit=50&offset=0")
       .then((res) => {
         setPokeApi(res.data.results);
-      })
-      .then((res) => {
-        pokeApi.map((poke) => {
-          axios.get(poke.url).then((res) => {
-            setWildPokemon([...wildPokemon, res.data]);
-          });
-        });
+        //   axios.get(poke.url).then((res) => {
+        //     setWildPokemon([...wildPokemon, res.data]);
+        //   });
       });
   }, []);
 
   return (
     <div>
-      <GameCanvas />
+      <GameCanvas
+        pokeApi={pokeApi}
+        battlePoke={battlePoke}
+        setBattlePoke={setBattlePoke}
+      />
     </div>
   );
 };
