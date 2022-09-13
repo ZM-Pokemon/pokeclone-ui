@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import map from "../../Assets/MAP.png";
 import collisions from "./collisions";
 import battleZonesData from "./battleZone";
@@ -6,13 +6,46 @@ import down from "../../Assets/playerDown.png";
 import up from "../../Assets/playerUp.png";
 import right from "../../Assets/playerRight.png";
 import left from "../../Assets/playerLeft.png";
-import { useEffect, useRef } from "react";
+import pokeBattle from "../../Assets/ppokebattle.png";
+import { useEffect, useRef, useLayoutEffect } from "react";
+import styled, { keyframes } from "styled-components";
+import { gsap } from "gsap";
+gsap.registerPlugin();
+gsap.defaults({ overwrite: "auto" });
+
+const flash = keyframes`
+   from { opacity: 1.0; }
+    to { opacity: 0.0; }
+`;
+
+let BattleDiv = styled.div`
+  background-color: black;
+  opacity: 0;
+  pointer-events: none;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  animation-name: ${flash};
+  animation-iteration-count: 3;
+  animation-duration: 0.5s;
+`;
+
+let ParentDiv = styled.div`
+  display: inline-block;
+  position: relative;
+  pointer-events: none;
+`;
 
 const GameCanvas = () => {
+  const [battleInitiation, setBattleInitiation] = useState(false);
   // Canvas setup
   const canvasRef = useRef();
+  const battleDivRef = useRef();
+  const requestRef = useRef();
   let width = 700;
-  let height = 600;
+  let height = 467;
 
   ////Collisions setup
   //////loops through collission arrays for the amount of tiles our map is
@@ -38,6 +71,8 @@ const GameCanvas = () => {
   playerImgRight.src = right;
   const playerImgLeft = new Image();
   playerImgLeft.src = left;
+  const battleBackgroundImg = new Image();
+  battleBackgroundImg.src = pokeBattle;
 
   //image tuning
   const keys = {
@@ -99,14 +134,16 @@ const GameCanvas = () => {
 
   //loading and animation
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const canvas = canvasRef.current;
     const context = canvas.getContext("2d");
 
     //background offset
     const offSet = {
       x: -1113,
-      y: -2700,
+      y: -2770,
+      //   x: -1113,
+      //   y: -2700,
     };
 
     //collision class
@@ -163,6 +200,10 @@ const GameCanvas = () => {
           );
       });
     });
+
+    const battle = {
+      initiated: false,
+    };
 
     //player/map movement class
     class Sprite {
@@ -251,7 +292,9 @@ const GameCanvas = () => {
 
     function animate() {
       //creates loop
-      window.requestAnimationFrame(animate);
+      requestRef.current = window.requestAnimationFrame(animate);
+      //   console.log(requestRef.current);
+
       //draws background using Sprite constructor
       background.draw();
       //drawing boundaries
@@ -265,7 +308,10 @@ const GameCanvas = () => {
       //draws player on map
       player.draw();
 
+      let moving = true;
+      player.moving = false;
       //battle zones
+      if (battle.initiated) return;
       if (
         keys.w.pressed ||
         keys.a.pressed ||
@@ -279,16 +325,23 @@ const GameCanvas = () => {
             retangularCollision({
               rectangle1: player,
               rectangle2: battleZone,
-            })
+            }) &&
+            Math.random() < 0.003
           ) {
-            console.log("battlezone");
+            window.cancelAnimationFrame(requestRef.current);
+            battle.initiated = true;
+            player.moving = false;
+            setBattleInitiation(true);
+            setTimeout(() => {
+              animateBattle();
+              setBattleInitiation(false);
+            }, 1350);
             break;
           }
         }
       }
       //player collision if else
-      let moving = true;
-      player.moving = false;
+
       if (keys.w.pressed && lastKey === "w") {
         player.image = player.sprites.up;
         player.moving = true;
@@ -401,9 +454,40 @@ const GameCanvas = () => {
       }
     }
     animate();
-  });
+    //battle animation
+    const battleBackground = new Sprite({
+      position: {
+        x: 0,
+        y: 0,
+      },
+      image: battleBackgroundImg,
+    });
+    function animateBattle() {
+      window.requestAnimationFrame(animateBattle);
+      battleBackground.draw();
+      console.log("battling");
+    }
+  }, []);
 
-  return <canvas ref={canvasRef} height={height} width={width} />;
+  return (
+    <ParentDiv>
+      {battleInitiation ? <BattleDiv ref={battleDivRef}></BattleDiv> : null}
+      {/* <div
+        style={{
+          backgroundcolor: "black",
+          opacity: 1,
+          pointerEvents: "none",
+          position: "absolute",
+          top: 0,
+          right: 0,
+          left: 0,
+          bottom: 0,
+        }}
+        ref={battleDivRef}
+      ></div> */}
+      <canvas ref={canvasRef} height={height} width={width} />
+    </ParentDiv>
+  );
 };
 
 export default GameCanvas;
