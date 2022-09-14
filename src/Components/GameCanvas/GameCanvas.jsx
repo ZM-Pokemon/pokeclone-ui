@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import map from "../../Assets/MAP.png";
+import axios from "axios";
 import collisions from "./collisions";
 import battleZonesData from "./battleZone";
 import down from "../../Assets/playerDown.png";
@@ -38,33 +39,50 @@ let ParentDiv = styled.div`
   pointer-events: none;
 `;
 
-const GameCanvas = ({ pokeApi, battlePoke, setBattlePoke }) => {
+const GameCanvas = ({ starterPokemon }) => {
   const [battleInitiation, setBattleInitiation] = useState(false);
+  const [battlePoke, setBattlePoke] = useState();
+  //   const [num, setNum] = useState(1);
 
-  const [num, setNum] = useState(1);
+  //   function randomNumberInRange(min, max) {
+  //     // 👇️ get number between min (inclusive) and max (inclusive)
+  //     return Math.floor(Math.random() * (max - min + 1)) + min;
+  //   }
 
-  function randomNumberInRange(min, max) {
-    // 👇️ get number between min (inclusive) and max (inclusive)
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-  }
-
+  const pokeTest = [];
+  const pokeTest2 = [];
   useEffect(() => {
-    const interval = setInterval(() => {
-      // 👇️ generate random number between 1 and 10
-      setNum(randomNumberInRange(1, 50));
-    }, 1000); // 👈️ runs every 1 second
+    axios
+      .get("https://pokeapi.co/api/v2/pokemon?limit=151&offset=0")
+      .then((res) => {
+        console.log(res);
+        res.data.results.forEach((poke) => {
+          pokeTest.push(poke);
+        });
+      })
+      .then((res) => {
+        pokeTest.forEach((p) => {
+          axios.get(p.url).then((res) => {
+            pokeTest2.push(res.data);
+            // console.log(pokeTest2);
+          });
+        });
+      });
+  }, []);
 
-    return () => {
-      clearInterval(interval);
-    };
-  }, [pokeApi]);
+  //   useEffect(() => {
+  //     const interval = setInterval(() => {
+  //       // 👇️ generate random number between 1 and 10
+  //       setNum(randomNumberInRange(0, 150));
+  //     }, 5000); // 👈️ runs every 1 second
 
-  //////////start here
-  useEffect(() => {
-    setTimeout(() => {
-      setBattlePoke(pokeApi[randomNumberInRange(0, 49)]);
-    }, 2000);
-  }, [battleInitiation]);
+  //     return () => {
+  //       clearInterval(interval);
+  //     };
+  //   }, []);
+  //   axios.get(`https://pokeapi.co/api/v2/pokemon/${num}`).then((res) => {
+  //     setBattlePoke(res.data);
+  //   });
 
   // Canvas setup
   const canvasRef = useRef();
@@ -164,6 +182,10 @@ const GameCanvas = ({ pokeApi, battlePoke, setBattlePoke }) => {
     const canvas = canvasRef.current;
     const context = canvas.getContext("2d");
 
+    function setRandomPoke(num) {
+      battleImg.src = pokeTest2[num].sprites.front_default;
+      setBattlePoke(pokeTest2[num]);
+    }
     //background offset
     const offSet = {
       x: -1113,
@@ -184,7 +206,7 @@ const GameCanvas = ({ pokeApi, battlePoke, setBattlePoke }) => {
       }
 
       draw() {
-        context.fillStyle = "rgba(255, 0, 0, .5)";
+        context.fillStyle = "rgba(255, 0, 0, 0)";
         context.fillRect(
           this.position.x,
           this.position.y,
@@ -358,21 +380,16 @@ const GameCanvas = ({ pokeApi, battlePoke, setBattlePoke }) => {
             battle.initiated = true;
             player.moving = false;
             setBattleInitiation(true);
-            // console.log(randomPoke);
-            // setBattlePoke(pokeApi[randomNumberInRange(1, 49)]);
+            setRandomPoke(Math.floor(Math.random() * pokeTest2.length));
+            // battleImg.src =
+            //   pokeTest2[
+            //     Math.floor(Math.random() * pokeTest2.length)
+            //   ].sprites.front_default;
+
             setTimeout(() => {
-              // const opponent = new Sprite({
-              //     position: {
-              //         x:280,
-              //         y:325,
-              //     },
-              //     image:
-
-              // })
-
               animateBattle();
               setBattleInitiation(false);
-            }, 1350);
+            }, 1500);
             break;
           }
         }
@@ -499,10 +516,19 @@ const GameCanvas = ({ pokeApi, battlePoke, setBattlePoke }) => {
       },
       image: battleBackgroundImg,
     });
+    const battleImg = new Image();
+
+    const opponent = new Sprite({
+      position: {
+        x: 470,
+        y: 100,
+      },
+      image: battleImg || "",
+    });
     function animateBattle() {
       window.requestAnimationFrame(animateBattle);
       battleBackground.draw();
-      console.log("battling");
+      opponent?.draw();
     }
   }, []);
 
