@@ -9,7 +9,8 @@ import right from "../../Assets/playerRight.png";
 import left from "../../Assets/playerLeft.png";
 import pokeBattle from "../../Assets/ppokebattle.png";
 import { useEffect, useRef, useLayoutEffect } from "react";
-import styled, { keyframes } from "styled-components";
+import styled, { keyframes, withTheme } from "styled-components";
+import "./styles.css";
 // import { gsap, random } from "gsap";
 // gsap.registerPlugin();
 // gsap.defaults({ overwrite: "auto" });
@@ -48,14 +49,16 @@ const GameCanvas = ({ starterPokemon }) => {
   //     // 👇️ get number between min (inclusive) and max (inclusive)
   //     return Math.floor(Math.random() * (max - min + 1)) + min;
   //   }
-
+  const playerPoke = useRef();
+  setTimeout(() => {
+    playerPoke.current = starterPokemon;
+  }, 3000);
   const pokeTest = [];
   const pokeTest2 = [];
   useEffect(() => {
     axios
       .get("https://pokeapi.co/api/v2/pokemon?limit=151&offset=0")
       .then((res) => {
-        console.log(res);
         res.data.results.forEach((poke) => {
           pokeTest.push(poke);
         });
@@ -183,8 +186,10 @@ const GameCanvas = ({ starterPokemon }) => {
     const context = canvas.getContext("2d");
 
     function setRandomPoke(num) {
+      console.log(playerPoke);
       battleImg.src = pokeTest2[num].sprites.front_default;
       setBattlePoke(pokeTest2[num]);
+      playerPokeImg.src = playerPoke.current.sprites.back_default;
     }
     //background offset
     const offSet = {
@@ -381,6 +386,7 @@ const GameCanvas = ({ starterPokemon }) => {
             player.moving = false;
             setBattleInitiation(true);
             setRandomPoke(Math.floor(Math.random() * pokeTest2.length));
+
             // battleImg.src =
             //   pokeTest2[
             //     Math.floor(Math.random() * pokeTest2.length)
@@ -517,38 +523,56 @@ const GameCanvas = ({ starterPokemon }) => {
       image: battleBackgroundImg,
     });
     const battleImg = new Image();
+    const playerPokeImg = new Image();
 
     const opponent = new Sprite({
       position: {
         x: 470,
-        y: 100,
+        y: 110,
       },
       image: battleImg || "",
+    });
+    const playerPokeSprite = new Sprite({
+      position: {
+        x: 140,
+        y: 240,
+      },
+      image: playerPokeImg || "",
     });
     function animateBattle() {
       window.requestAnimationFrame(animateBattle);
       battleBackground.draw();
       opponent?.draw();
+      playerPokeSprite.draw();
     }
   }, []);
 
   return (
     <ParentDiv>
       {battleInitiation ? <BattleDiv ref={battleDivRef}></BattleDiv> : null}
-      {/* <div
-        style={{
-          backgroundcolor: "black",
-          opacity: 1,
-          pointerEvents: "none",
-          position: "absolute",
-          top: 0,
-          right: 0,
-          left: 0,
-          bottom: 0,
-        }}
-        ref={battleDivRef}
-      ></div> */}
+      <div className="opponent">
+        {battlePoke?.name}
+        <div className="healthBarDiv">
+          <div className="healthBarPotential"></div>
+          <div className="healthBar"></div>
+        </div>
+      </div>
       <canvas ref={canvasRef} height={height} width={width} />
+      <div className="abilityBar">
+        <div className="buttonDiv">
+          <button>attack 1</button>
+          <button>attack 2</button>
+          <button>attack 3</button>
+          <button>attack 4</button>
+        </div>
+        <div className="playerDiv">
+          <div className="playerName">{starterPokemon?.name}</div>
+          <div>
+            <div className="playerHealthPotential"></div>
+            <div className="playerHealth"></div>
+          </div>
+        </div>
+      </div>
     </ParentDiv>
   );
 };

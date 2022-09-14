@@ -1,0 +1,106 @@
+* {
+  font-family: "Press Start 2P", cursive;
+}
+
+h1 {
+  margin: 0;
+  font-size: 16px;
+  /* font-family: "Press Start 2P", cursive; */
+}
+.abilityBar {
+  background-color: white;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 152px;
+  border-top: 4px black solid;
+  display: flex;
+}
+
+.opponent {
+  background-color: white;
+  width: 250px;
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  border: 4px black solid;
+  padding: 8px;
+}
+
+.healthBarDiv {
+  position: relative;
+}
+
+.healthBarPotential {
+  height: 5px;
+  background-color: grey;
+  margin-top: 8px;
+}
+
+.healthBar {
+  height: 5px;
+  background-color: green;
+  /* margin-top: 8px; */
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+}
+
+.playerDiv {
+  display: flex;
+  justify-content: center;
+  width: 33.33%;
+  position: relative;
+  /* align-items: center; */
+}
+
+.playerName {
+  margin: 14px;
+}
+
+.playerHealthPotential {
+  height: 5px;
+  background-color: grey;
+  /* margin-top: 8px; */
+  position: absolute;
+  top: 50px;
+  left: 5px;
+  right: 5px;
+}
+
+.playerHealth {
+  height: 5px;
+  background-color: green;
+  /* margin-top: 8px; */
+  position: absolute;
+  top: 50px;
+  left: 5px;
+  right: 5px;
+}
+
+.buttonDiv {
+  width: 66.66%;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.buttonDiv button {
+  background-color: white;
+  font-size: 16px;
+  cursor: pointer;
+  /* font-family: "Press Start 2P", cursive; */
+}
+
+button:hover {
+  background-color: black;
+}
+
+.typeDiv {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 33.33%;
+  border-left: 4px black solid;
+}
