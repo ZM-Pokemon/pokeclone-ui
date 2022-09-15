@@ -10,6 +10,10 @@ import left from "../../Assets/playerLeft.png";
 import pokeBattle from "../../Assets/ppokebattle.png";
 import { useEffect, useRef, useLayoutEffect } from "react";
 import styled, { keyframes, withTheme } from "styled-components";
+import { Howl, Howler } from "howler";
+import gameMusicFile from "../../Assets/102-palette town theme.mp3";
+import battleMusicFile from "../../Assets/107-battle (vs wild pokemon).mp3";
+import victoryMusicFile from "../../Assets/108-victory (vs wild pokemon).mp3";
 import gsap from "gsap";
 import "./styles.css";
 
@@ -45,6 +49,27 @@ const GameCanvas = ({ starterPokemon }) => {
   const [battlePoke, setBattlePoke] = useState();
   //   const [num, setNum] = useState(1);
 
+  //sounds
+  const gameMusic = new Howl({
+    src: [gameMusicFile],
+    loop: true,
+    volume: 0.05,
+  });
+
+  const battleMusic = new Howl({
+    src: [battleMusicFile],
+
+    loop: true,
+    volume: 0.05,
+  });
+
+  const victoryMusic = new Howl({
+    src: [victoryMusicFile],
+
+    loop: true,
+    volume: 0.05,
+  });
+
   //   function randomNumberInRange(min, max) {
   //     // 👇️ get number between min (inclusive) and max (inclusive)
   //     return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -59,6 +84,7 @@ const GameCanvas = ({ starterPokemon }) => {
   const pokeTest = [];
   const pokeTest2 = [];
   useEffect(() => {
+    gameMusic.play();
     axios
       .get("https://pokeapi.co/api/v2/pokemon?limit=151&offset=0")
       .then((res) => {
@@ -453,6 +479,8 @@ const GameCanvas = ({ starterPokemon }) => {
             Math.random() < 0.003
           ) {
             window.cancelAnimationFrame(requestRef.current);
+            gameMusic.stop();
+            battleMusic.play();
             battle.initiated = true;
             player.moving = false;
             setBattleInitiation(true);

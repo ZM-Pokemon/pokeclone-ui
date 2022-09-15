@@ -13,6 +13,7 @@
     "axios": "^0.27.2",
     "dotenv": "^16.0.2",
     "gsap": "^3.11.1",
+    "howler": "^2.2.3",
     "jsonwebtoken": "^8.5.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
