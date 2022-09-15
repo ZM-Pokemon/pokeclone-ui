@@ -45,7 +45,8 @@ let ParentDiv = styled.div`
 const GameCanvas = ({ starterPokemon }) => {
   const [battleInitiation, setBattleInitiation] = useState(false);
   const [battleInitiation2, setBattleInitiation2] = useState(false);
-  //   const [battlePlayers, setBattlePlayers] = useState([]);
+  const [battleIsFinished, setBattleIsFinished] = useState(1);
+
   const [battlePoke, setBattlePoke] = useState();
   //   const [num, setNum] = useState(1);
 
@@ -58,14 +59,12 @@ const GameCanvas = ({ starterPokemon }) => {
 
   const battleMusic = new Howl({
     src: [battleMusicFile],
-
     loop: true,
     volume: 0.05,
   });
 
   const victoryMusic = new Howl({
     src: [victoryMusicFile],
-
     loop: true,
     volume: 0.05,
   });
@@ -77,6 +76,7 @@ const GameCanvas = ({ starterPokemon }) => {
   const playerPoke = useRef();
   const opponent = useRef();
   const playerPokeSprite = useRef();
+  const animateLoop = useRef();
 
   setTimeout(() => {
     playerPoke.current = starterPokemon;
@@ -100,27 +100,22 @@ const GameCanvas = ({ starterPokemon }) => {
           });
         });
       });
-  }, []);
-
-  //   useEffect(() => {
-  //     const interval = setInterval(() => {
-  //       // 👇️ generate random number between 1 and 10
-  //       setNum(randomNumberInRange(0, 150));
-  //     }, 5000); // 👈️ runs every 1 second
-
-  //     return () => {
-  //       clearInterval(interval);
-  //     };
-  //   }, []);
-  //   axios.get(`https://pokeapi.co/api/v2/pokemon/${num}`).then((res) => {
-  //     setBattlePoke(res.data);
-  //   });
+  }, [battleIsFinished]);
 
   // Canvas setup
   const battleText = useRef();
   const canvasRef = useRef();
   const battleDivRef = useRef();
   const requestRef = useRef();
+  const requestBattleRef = useRef();
+
+  //   const offSet = useRef({
+  //     x: -1113,
+  //     y: -2780,
+  //     //   x: -1113,
+  //     //   y: -2700,
+  //   });
+
   let width = 700;
   let height = 467;
 
@@ -231,9 +226,9 @@ const GameCanvas = ({ starterPokemon }) => {
       playerPokeSprite.current.name = playerPoke.current.name;
     }
     //background offset
-    const offSet = {
+    let offSet = {
       x: -1113,
-      y: -2770,
+      y: -2780,
       //   x: -1113,
       //   y: -2700,
     };
@@ -250,7 +245,7 @@ const GameCanvas = ({ starterPokemon }) => {
       }
 
       draw() {
-        context.fillStyle = "rgba(255, 0, 0, 0)";
+        context.fillStyle = "rgba(255, 0, 0, 0.4)";
         context.fillRect(
           this.position.x,
           this.position.y,
@@ -268,8 +263,6 @@ const GameCanvas = ({ starterPokemon }) => {
               position: {
                 x: j * Boundary.width + offSet.x,
                 y: i * Boundary.height + offSet.y,
-                // x: j + offSet.x,
-                // y: i + offSet.y,
               },
             })
           );
@@ -285,8 +278,6 @@ const GameCanvas = ({ starterPokemon }) => {
               position: {
                 x: j * Boundary.width + offSet.x,
                 y: i * Boundary.height + offSet.y,
-                // x: j + offSet.x,
-                // y: i + offSet.y,
               },
             })
           );
@@ -323,6 +314,18 @@ const GameCanvas = ({ starterPokemon }) => {
         this.name = name;
       }
 
+      faint() {
+        battleMusic.stop();
+        victoryMusic.play();
+        battleText.current.innerHTML = this.name + " fainted!";
+        gsap.to(this.position, {
+          y: this.position.y + 20,
+        });
+        gsap.to(this, {
+          opacity: 0,
+        });
+      }
+
       draw() {
         context.save();
         context.globalAlpha = this.opacity;
@@ -354,18 +357,13 @@ const GameCanvas = ({ starterPokemon }) => {
           }
         }
       }
+
       attack({ attack, recipient }) {
+        recipient.health -= attack.damage;
         battleText.current.style.display = "block";
         battleText.current.innerHTML = this.name + " used " + attack.name;
-        // battleText.current.addEventListener("click", (e) => {
-        //   if (queue.length >= 0) {
-        //     queue[0]();
-        //     queue.shift();
-        //   } else e.currentTarget.style.display = "none";
-        // });
-        const tl = gsap.timeline();
 
-        this.health -= attack.damage;
+        const tl = gsap.timeline();
 
         let movementDistance = 10;
         if (this.isEnemy) movementDistance = -10;
@@ -382,7 +380,7 @@ const GameCanvas = ({ starterPokemon }) => {
             onComplete: () => {
               //actual hit
               gsap.to(healthBar, {
-                width: this.health - attack.damage + "%",
+                width: recipient.health + "%",
               });
 
               gsap.to(recipient.position, {
@@ -440,9 +438,10 @@ const GameCanvas = ({ starterPokemon }) => {
       );
     }
 
-    function animate() {
+    animateLoop.current = () => {
+      //   console.log(movables[1].position);
       //creates loop
-      requestRef.current = window.requestAnimationFrame(animate);
+      requestRef.current = window.requestAnimationFrame(animateLoop.current);
       //   console.log(requestRef.current);
 
       //draws background using Sprite constructor
@@ -486,17 +485,13 @@ const GameCanvas = ({ starterPokemon }) => {
             setBattleInitiation(true);
             setRandomPoke(Math.floor(Math.random() * pokeTest2.length));
 
-            // battleImg.src =
-            //   pokeTest2[
-            //     Math.floor(Math.random() * pokeTest2.length)
-            //   ].sprites.front_default;
-
             setTimeout(() => {
               animateBattle();
+              //   setBattleIsFinished(false);
               setBattleInitiation2(true);
               setBattleInitiation(false);
             }, 1500);
-            break;
+            // break;
           }
         }
       }
@@ -529,6 +524,8 @@ const GameCanvas = ({ starterPokemon }) => {
         if (moving)
           movables.forEach((movable) => {
             movable.position.y += 3;
+            // console.log(movable.position);
+            // positionSaveRef.current.y += 3;
           });
       } else if (keys.a.pressed && lastKey === "a") {
         player.image = player.sprites.left;
@@ -556,6 +553,7 @@ const GameCanvas = ({ starterPokemon }) => {
         if (moving)
           movables.forEach((movable) => {
             movable.position.x += 3;
+            // positionSaveRef.current.x += 3;
           });
       } else if (keys.s.pressed && lastKey === "s") {
         player.image = player.sprites.down;
@@ -583,6 +581,7 @@ const GameCanvas = ({ starterPokemon }) => {
         if (moving)
           movables.forEach((movable) => {
             movable.position.y -= 3;
+            // positionSaveRef.current.y -= 3;
           });
       } else if (keys.d.pressed && lastKey === "d") {
         player.image = player.sprites.right;
@@ -610,10 +609,14 @@ const GameCanvas = ({ starterPokemon }) => {
         if (moving)
           movables.forEach((movable) => {
             movable.position.x -= 3;
+            // positionSaveRef.current.x -= 3;
           });
       }
-    }
-    animate();
+      //   animateLoop.current();
+    };
+    // if (battleIsFinished) {
+    animateLoop.current();
+    // }
     //battle animation
     const battleBackground = new Sprite({
       position: {
@@ -656,12 +659,12 @@ const GameCanvas = ({ starterPokemon }) => {
     });
 
     function animateBattle() {
-      window.requestAnimationFrame(animateBattle);
+      requestBattleRef.current = window.requestAnimationFrame(animateBattle);
       battleBackground.draw();
       opponent?.current.draw();
       playerPokeSprite.current.draw();
     }
-  }, []);
+  }, [battleIsFinished]);
 
   const queue = [];
   const opponentMoves = [
@@ -673,14 +676,39 @@ const GameCanvas = ({ starterPokemon }) => {
 
   let opponentMove = opponentMoves[Math.floor(Math.random() * 4)];
 
+  const finishBattle = () => {
+    setBattleInitiation(false);
+    setBattleInitiation2(false);
+    setBattleIsFinished(Math.floor(Math.random() * 4094109274824));
+    cancelAnimationFrame(requestBattleRef.current);
+  };
+  //   let wasClicked = false;
   function handleClick(move) {
+    // if (wasClicked) {
+    //   return;
+    // }
+    // wasClicked = true;
+    // setTimeout(() => {
+    //   wasClicked = false;
+    // }, 2000);
+
     playerPokeSprite.current.attack({
       attack: {
         name: move,
-        damage: 15,
+        damage: 20,
       },
       recipient: opponent.current,
     });
+
+    if (opponent.current.health <= 0) {
+      queue.push(() => {
+        opponent.current.faint();
+      });
+      queue.push(() => {
+        finishBattle();
+      });
+    }
+
     queue.push(() => {
       opponent.current.attack({
         attack: {
@@ -690,7 +718,13 @@ const GameCanvas = ({ starterPokemon }) => {
         recipient: playerPokeSprite.current,
       });
     });
-    console.log(queue);
+
+    if (playerPokeSprite.current.health <= 0) {
+      queue.push(() => {
+        opponent.current.faint();
+      });
+      //   return;
+    }
   }
 
   function handleDialog(e) {
@@ -725,10 +759,10 @@ const GameCanvas = ({ starterPokemon }) => {
             <div ref={battleText} onClick={handleDialog} className="battleText">
               dsadas
             </div>
-            <button onClick={() => handleClick(move1)}>{move1}</button>
-            <button onClick={() => handleClick(move2)}>{move2}</button>
-            <button onClick={() => handleClick(move3)}>{move3}</button>
-            <button onClick={() => handleClick(move4)}>{move4}</button>
+            <button onClickCapture={() => handleClick(move1)}>{move1}</button>
+            <button onClickCapture={() => handleClick(move2)}>{move2}</button>
+            <button onClickCapture={() => handleClick(move3)}>{move3}</button>
+            <button onClickCapture={() => handleClick(move4)}>{move4}</button>
           </div>
           <div className="playerDiv">
             <div className="playerName">{starterPokemon?.name}</div>
