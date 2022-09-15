@@ -94,7 +94,7 @@ h1 {
 }
 
 button:hover {
-  background-color: black;
+  background-color: rgba(128, 128, 128, 0.766);
 }
 
 .typeDiv {
@@ -103,4 +103,15 @@ button:hover {
   justify-content: center;
   width: 33.33%;
   border-left: 4px black solid;
+}
+
+.battleText {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 33.33%;
+  background-color: white;
+  display: none;
+  cursor: pointer;
 }

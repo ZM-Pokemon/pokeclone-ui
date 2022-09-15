@@ -10,10 +10,8 @@ import left from "../../Assets/playerLeft.png";
 import pokeBattle from "../../Assets/ppokebattle.png";
 import { useEffect, useRef, useLayoutEffect } from "react";
 import styled, { keyframes, withTheme } from "styled-components";
+import gsap from "gsap";
 import "./styles.css";
-// import { gsap, random } from "gsap";
-// gsap.registerPlugin();
-// gsap.defaults({ overwrite: "auto" });
 
 const flash = keyframes`
    from { opacity: 1.0; }
@@ -37,11 +35,13 @@ let BattleDiv = styled.div`
 let ParentDiv = styled.div`
   display: inline-block;
   position: relative;
-  pointer-events: none;
+  /* pointer-events: none; */
 `;
 
 const GameCanvas = ({ starterPokemon }) => {
   const [battleInitiation, setBattleInitiation] = useState(false);
+  const [battleInitiation2, setBattleInitiation2] = useState(false);
+  //   const [battlePlayers, setBattlePlayers] = useState([]);
   const [battlePoke, setBattlePoke] = useState();
   //   const [num, setNum] = useState(1);
 
@@ -50,6 +50,9 @@ const GameCanvas = ({ starterPokemon }) => {
   //     return Math.floor(Math.random() * (max - min + 1)) + min;
   //   }
   const playerPoke = useRef();
+  const opponent = useRef();
+  const playerPokeSprite = useRef();
+
   setTimeout(() => {
     playerPoke.current = starterPokemon;
   }, 3000);
@@ -88,6 +91,7 @@ const GameCanvas = ({ starterPokemon }) => {
   //   });
 
   // Canvas setup
+  const battleText = useRef();
   const canvasRef = useRef();
   const battleDivRef = useRef();
   const requestRef = useRef();
@@ -190,6 +194,15 @@ const GameCanvas = ({ starterPokemon }) => {
       battleImg.src = pokeTest2[num].sprites.front_default;
       setBattlePoke(pokeTest2[num]);
       playerPokeImg.src = playerPoke.current.sprites.back_default;
+      opponent.current.name = pokeTest2[num].name;
+      //   opponent.current.moves = [
+      //     { name: "Tackle", damage: 12 },
+      //     { name: "Bite", damage: 10 },
+      //     { name: "Headbutt", damage: 14 },
+      //     { name: "hidden-power", damage: 12 },
+      //   ];
+
+      playerPokeSprite.current.name = playerPoke.current.name;
     }
     //background offset
     const offSet = {
@@ -266,6 +279,8 @@ const GameCanvas = ({ starterPokemon }) => {
         image,
         frames = { max: 1 },
         sprites = [],
+        isEnemy = false,
+        name,
       }) {
         this.position = position;
         this.image = image;
@@ -276,9 +291,15 @@ const GameCanvas = ({ starterPokemon }) => {
         };
         this.moving = false;
         this.sprites = sprites;
+        this.opacity = 1;
+        this.health = 100;
+        this.isEnemy = isEnemy;
+        this.name = name;
       }
 
       draw() {
+        context.save();
+        context.globalAlpha = this.opacity;
         context.drawImage(
           //cropping
           this.image,
@@ -292,6 +313,7 @@ const GameCanvas = ({ starterPokemon }) => {
           this.image.width / this.frames.max,
           this.image.height
         );
+        context.restore();
         //walking animation
         if (!this.moving) return;
 
@@ -305,6 +327,55 @@ const GameCanvas = ({ starterPokemon }) => {
             this.frames.val = 0;
           }
         }
+      }
+      attack({ attack, recipient }) {
+        battleText.current.style.display = "block";
+        battleText.current.innerHTML = this.name + " used " + attack.name;
+        // battleText.current.addEventListener("click", (e) => {
+        //   if (queue.length >= 0) {
+        //     queue[0]();
+        //     queue.shift();
+        //   } else e.currentTarget.style.display = "none";
+        // });
+        const tl = gsap.timeline();
+
+        this.health -= attack.damage;
+
+        let movementDistance = 10;
+        if (this.isEnemy) movementDistance = -10;
+
+        let healthBar = "#enemyHealthBar";
+        if (this.isEnemy) healthBar = "#playerHealthBar";
+
+        tl.to(this.position, {
+          x: this.position.x - movementDistance,
+        })
+          .to(this.position, {
+            x: this.position.x + movementDistance * 2,
+            duration: 0.1,
+            onComplete: () => {
+              //actual hit
+              gsap.to(healthBar, {
+                width: this.health - attack.damage + "%",
+              });
+
+              gsap.to(recipient.position, {
+                x: recipient.position.x + 10,
+                yoyo: true,
+                repeat: 5,
+                duration: 0.08,
+              });
+              gsap.to(recipient, {
+                opacity: 0,
+                repeat: 5,
+                yoyo: true,
+                duration: 0.08,
+              });
+            },
+          })
+          .to(this.position, {
+            x: this.position.x,
+          });
       }
     }
     const player = new Sprite({
@@ -394,6 +465,7 @@ const GameCanvas = ({ starterPokemon }) => {
 
             setTimeout(() => {
               animateBattle();
+              setBattleInitiation2(true);
               setBattleInitiation(false);
             }, 1500);
             break;
@@ -525,54 +597,120 @@ const GameCanvas = ({ starterPokemon }) => {
     const battleImg = new Image();
     const playerPokeImg = new Image();
 
-    const opponent = new Sprite({
+    // const opponent = new Sprite({
+    //   position: {
+    //     x: 470,
+    //     y: 110,
+    //   },
+    //   image: battleImg || "",
+    // });
+    // const playerPokeSprite = new Sprite({
+    //   position: {
+    //     x: 140,
+    //     y: 240,
+    //   },
+    //   image: playerPokeImg || "",
+    // });
+    opponent.current = new Sprite({
       position: {
         x: 470,
         y: 110,
       },
       image: battleImg || "",
+      isEnemy: true,
     });
-    const playerPokeSprite = new Sprite({
+    playerPokeSprite.current = new Sprite({
       position: {
         x: 140,
         y: 240,
       },
       image: playerPokeImg || "",
     });
+
     function animateBattle() {
       window.requestAnimationFrame(animateBattle);
       battleBackground.draw();
-      opponent?.draw();
-      playerPokeSprite.draw();
+      opponent?.current.draw();
+      playerPokeSprite.current.draw();
     }
   }, []);
+
+  const queue = [];
+  const opponentMoves = [
+    { name: "Tackle", damage: 12 },
+    { name: "Bite", damage: 10 },
+    { name: "Headbutt", damage: 14 },
+    { name: "hidden-power", damage: 12 },
+  ];
+
+  let opponentMove = opponentMoves[Math.floor(Math.random() * 4)];
+
+  function handleClick(move) {
+    playerPokeSprite.current.attack({
+      attack: {
+        name: move,
+        damage: 15,
+      },
+      recipient: opponent.current,
+    });
+    queue.push(() => {
+      opponent.current.attack({
+        attack: {
+          name: opponentMove.name,
+          damage: opponentMove.damage,
+        },
+        recipient: playerPokeSprite.current,
+      });
+    });
+    console.log(queue);
+  }
+
+  function handleDialog(e) {
+    if (queue.length > 0) {
+      queue[0]();
+      queue.shift();
+      opponentMove = opponentMoves[Math.floor(Math.random() * 4)];
+    } else e.currentTarget.style.display = "none";
+  }
+
+  let move1 = starterPokemon?.moves[Math.floor(Math.random() * 99)].move.name;
+  let move2 = starterPokemon?.moves[Math.floor(Math.random() * 99)].move.name;
+  let move3 = starterPokemon?.moves[Math.floor(Math.random() * 99)].move.name;
+  let move4 = starterPokemon?.moves[Math.floor(Math.random() * 99)].move.name;
 
   return (
     <ParentDiv>
       {battleInitiation ? <BattleDiv ref={battleDivRef}></BattleDiv> : null}
-      <div className="opponent">
-        {battlePoke?.name}
-        <div className="healthBarDiv">
-          <div className="healthBarPotential"></div>
-          <div className="healthBar"></div>
-        </div>
-      </div>
-      <canvas ref={canvasRef} height={height} width={width} />
-      <div className="abilityBar">
-        <div className="buttonDiv">
-          <button>attack 1</button>
-          <button>attack 2</button>
-          <button>attack 3</button>
-          <button>attack 4</button>
-        </div>
-        <div className="playerDiv">
-          <div className="playerName">{starterPokemon?.name}</div>
-          <div>
-            <div className="playerHealthPotential"></div>
-            <div className="playerHealth"></div>
+      {battleInitiation2 ? (
+        <div className="opponent">
+          {battlePoke?.name}
+          <div className="healthBarDiv">
+            <div className="healthBarPotential"></div>
+            <div id="enemyHealthBar" className="healthBar"></div>
           </div>
         </div>
-      </div>
+      ) : null}
+      <canvas ref={canvasRef} height={height} width={width} />
+      {battleInitiation2 ? (
+        <div className="abilityBar">
+          <div className="buttonDiv">
+            <div ref={battleText} onClick={handleDialog} className="battleText">
+              dsadas
+            </div>
+            <button onClick={() => handleClick(move1)}>{move1}</button>
+            <button onClick={() => handleClick(move2)}>{move2}</button>
+            <button onClick={() => handleClick(move3)}>{move3}</button>
+            <button onClick={() => handleClick(move4)}>{move4}</button>
+          </div>
+          <div className="playerDiv">
+            <div className="playerName">{starterPokemon?.name}</div>
+            <div>
+              <div className="playerHealthPotential"></div>
+              <div id="playerHealthBar" className="playerHealth"></div>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </ParentDiv>
   );
 };
