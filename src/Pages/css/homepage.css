@@ -1,0 +1,40 @@
+.Typewriter__wrapper {
+  font-size: 40px;
+  width: 300px;
+}
+
+.main {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-content: center;
+  padding-top: 300px;
+}
+
+.Typewriter {
+  width: 900px;
+  text-align: center;
+}
+
+.typewriterDiv {
+  align-self: center;
+}
+
+.formDiv {
+  display: flex;
+  flex-direction: column;
+  padding-top: 30px;
+  align-self: center;
+}
+
+.name {
+}
+
+.poke {
+  padding: 10px;
+  height: 20px;
+}
+
+.poke select {
+  height: 25px;
+}

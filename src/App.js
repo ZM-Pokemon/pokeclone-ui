@@ -6,7 +6,10 @@ import { useState } from "react";
 import HomePage from "./Pages/HomePage";
 
 function App() {
-  const [starterPokeSearch, setStarterPokeSearch] = useState();
+  const [starterPokeSearch, setStarterPokeSearch] = useState({
+    name: "",
+    pokemon: "",
+  });
 
   return (
     <Routes>
