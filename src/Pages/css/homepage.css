@@ -27,7 +27,8 @@
   align-self: center;
 }
 
-.name {
+.name input {
+  width: 200px;
 }
 
 .poke {

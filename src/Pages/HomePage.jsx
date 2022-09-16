@@ -56,6 +56,11 @@ const HomePage = ({ starterPokeSearch, setStarterPokeSearch }) => {
               <option value="squirtle">Squirtle</option>
             </select>
           </div>
+          <div style={{ textAlign: "center", margin: 20 }}>
+            <button type="submit" style={{ marginRight: 35 }}>
+              Lets go!
+            </button>
+          </div>
         </form>
       </div>
     </div>

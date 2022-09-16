@@ -25,19 +25,21 @@ const flash = keyframes`
 `;
 
 let BattleDiv = styled.div`
-  z-index: 10;
+  z-index: 2;
   background: black;
   opacity: 0;
-  position: "absolute";
-  height: "100%";
-  width: "100%";
+  position: absolute;
+  /* top: 0;
+  bottom: 0; */
+  height: 467px;
+  width: 700px;
   animation-name: ${flash};
   animation-iteration-count: 3;
   animation-duration: 0.5s;
 `;
 
 let ParentDiv = styled.div`
-  z-index: inherit;
+  /* z-index: inherit; */
   display: inline-block;
   position: relative;
   left: 470px;
@@ -111,13 +113,6 @@ const GameCanvas = ({ starterPokemon }) => {
   const battleDivRef = useRef();
   const requestRef = useRef();
   const requestBattleRef = useRef();
-
-  //   const offSet = useRef({
-  //     x: -1113,
-  //     y: -2780,
-  //     //   x: -1113,
-  //     //   y: -2700,
-  //   });
 
   let width = 700;
   let height = 467;
@@ -208,6 +203,12 @@ const GameCanvas = ({ starterPokemon }) => {
   });
 
   //loading and animation
+  const offSet = useRef({
+    x: -1113,
+    y: -2780,
+    //   x: -1113,
+    //   y: -2700,
+  });
 
   useLayoutEffect(() => {
     const canvas = canvasRef.current;
@@ -229,12 +230,12 @@ const GameCanvas = ({ starterPokemon }) => {
       playerPokeSprite.current.name = playerPoke.current.name;
     }
     //background offset
-    let offSet = {
-      x: -1113,
-      y: -2780,
-      //   x: -1113,
-      //   y: -2700,
-    };
+    // let offSet = {
+    //   x: -1113,
+    //   y: -2780,
+    //   //   x: -1113,
+    //   //   y: -2700,
+    // };
 
     //collision class
     class Boundary {
@@ -264,8 +265,8 @@ const GameCanvas = ({ starterPokemon }) => {
           boundaries.push(
             new Boundary({
               position: {
-                x: j * Boundary.width + offSet.x,
-                y: i * Boundary.height + offSet.y,
+                x: j * Boundary.width + offSet.current.x,
+                y: i * Boundary.height + offSet.current.y,
               },
             })
           );
@@ -279,8 +280,8 @@ const GameCanvas = ({ starterPokemon }) => {
           battleZones.push(
             new Boundary({
               position: {
-                x: j * Boundary.width + offSet.x,
-                y: i * Boundary.height + offSet.y,
+                x: j * Boundary.width + offSet.current.x,
+                y: i * Boundary.height + offSet.current.y,
               },
             })
           );
@@ -425,8 +426,8 @@ const GameCanvas = ({ starterPokemon }) => {
 
     const background = new Sprite({
       position: {
-        x: offSet.x,
-        y: offSet.y,
+        x: offSet.current.x,
+        y: offSet.current.y,
       },
       image: mapImg,
     });
@@ -487,6 +488,8 @@ const GameCanvas = ({ starterPokemon }) => {
             player.moving = false;
             setBattleInitiation(true);
             setRandomPoke(Math.floor(Math.random() * pokeTest2.length));
+            offSet.current.x = background.position.x;
+            offSet.current.y = background.position.y;
 
             setTimeout(() => {
               animateBattle();
@@ -683,6 +686,7 @@ const GameCanvas = ({ starterPokemon }) => {
     setBattleInitiation(false);
     setBattleInitiation2(false);
     setBattleIsFinished(Math.floor(Math.random() * 4094109274824));
+    // animateLoop.current();
     cancelAnimationFrame(requestBattleRef.current);
   };
   //   let wasClicked = false;
@@ -757,8 +761,9 @@ const GameCanvas = ({ starterPokemon }) => {
 
       <div className="bodyDiv">
         <ParentDiv>
-          {battleInitiation ? <div className="flash"></div> : null}
-
+          {battleInitiation ? <BattleDiv></BattleDiv> : null}
+          {/* {battleInitiation ? <div className="flash"></div> : null} */}
+          {/* <BattleDiv></BattleDiv> */}
           {battleInitiation2 ? (
             <div className="opponent">
               {battlePoke?.name}
