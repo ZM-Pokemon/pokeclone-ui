@@ -1,12 +1,79 @@
 * {
   font-family: "Press Start 2P", cursive;
 }
+.centered {
+  display: flex;
+  justify-content: center;
+}
+.switch {
+  position: absolute;
+  left: 5px;
+  color: black;
+}
+.bodyDiv {
+  width: 1640px;
+  height: 940px;
+  background-size: cover;
+  background-image: url("../../Assets/pngwing.com.png");
+}
+
+.background {
+  /* z-index: 1; */
+  background-size: cover;
+  /* width: 1700px;
+  height: 1300px; */
+  /* position: fixed;
+  left: 100px;
+  top: 0;
+  right: 0; */
+}
+
+.canvas {
+  position: relative;
+  left: 0;
+  top: 0;
+  right: 0;
+}
+
+.flash {
+  z-index: 10;
+  background: black;
+  opacity: 1;
+  position: "absolute";
+  height: "100%";
+  width: "100%";
+  -webkit-animation: flash linear 1s infinite;
+  animation: flash linear 1s infinite;
+}
+@-webkit-keyframes flash {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.1;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+@keyframes flash {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.1;
+  }
+  100% {
+    opacity: 1;
+  }
+}
 
 h1 {
   margin: 0;
   font-size: 16px;
   /* font-family: "Press Start 2P", cursive; */
 }
+
 .abilityBar {
   background-color: white;
   position: absolute;
@@ -19,6 +86,7 @@ h1 {
 }
 
 .opponent {
+  z-index: 10;
   background-color: white;
   width: 250px;
   position: absolute;

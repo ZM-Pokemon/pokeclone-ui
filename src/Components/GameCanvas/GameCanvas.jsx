@@ -8,12 +8,14 @@ import up from "../../Assets/playerUp.png";
 import right from "../../Assets/playerRight.png";
 import left from "../../Assets/playerLeft.png";
 import pokeBattle from "../../Assets/ppokebattle.png";
+import background from "../../Assets/pngwing.com.png";
 import { useEffect, useRef, useLayoutEffect } from "react";
 import styled, { keyframes, withTheme } from "styled-components";
 import { Howl, Howler } from "howler";
 import gameMusicFile from "../../Assets/102-palette town theme.mp3";
 import battleMusicFile from "../../Assets/107-battle (vs wild pokemon).mp3";
 import victoryMusicFile from "../../Assets/108-victory (vs wild pokemon).mp3";
+import { Switch, FormControlLabel } from "@mui/material";
 import gsap from "gsap";
 import "./styles.css";
 
@@ -23,22 +25,23 @@ const flash = keyframes`
 `;
 
 let BattleDiv = styled.div`
-  background-color: black;
+  z-index: 10;
+  background: black;
   opacity: 0;
-  pointer-events: none;
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
+  position: "absolute";
+  height: "100%";
+  width: "100%";
   animation-name: ${flash};
   animation-iteration-count: 3;
   animation-duration: 0.5s;
 `;
 
 let ParentDiv = styled.div`
+  z-index: inherit;
   display: inline-block;
   position: relative;
+  left: 470px;
+  top: 210px;
   /* pointer-events: none; */
 `;
 
@@ -245,7 +248,7 @@ const GameCanvas = ({ starterPokemon }) => {
       }
 
       draw() {
-        context.fillStyle = "rgba(255, 0, 0, 0.4)";
+        context.fillStyle = "rgba(255, 0, 0, 0)";
         context.fillRect(
           this.position.x,
           this.position.y,
@@ -740,40 +743,72 @@ const GameCanvas = ({ starterPokemon }) => {
   let move3 = starterPokemon?.moves[Math.floor(Math.random() * 99)].move.name;
   let move4 = starterPokemon?.moves[Math.floor(Math.random() * 99)].move.name;
 
+  const handleChange = () => {
+    gameMusic.stop();
+    battleMusic.stop();
+    victoryMusic.stop();
+  };
+
   return (
-    <ParentDiv>
-      {battleInitiation ? <BattleDiv ref={battleDivRef}></BattleDiv> : null}
-      {battleInitiation2 ? (
-        <div className="opponent">
-          {battlePoke?.name}
-          <div className="healthBarDiv">
-            <div className="healthBarPotential"></div>
-            <div id="enemyHealthBar" className="healthBar"></div>
-          </div>
-        </div>
-      ) : null}
-      <canvas ref={canvasRef} height={height} width={width} />
-      {battleInitiation2 ? (
-        <div className="abilityBar">
-          <div className="buttonDiv">
-            <div ref={battleText} onClick={handleDialog} className="battleText">
-              dsadas
+    <div className="centered">
+      {/* <button className="switch" onClick={() => handleChange}>
+        mute
+      </button> */}
+
+      <div className="bodyDiv">
+        <ParentDiv>
+          {battleInitiation ? <div className="flash"></div> : null}
+
+          {battleInitiation2 ? (
+            <div className="opponent">
+              {battlePoke?.name}
+              <div className="healthBarDiv">
+                <div className="healthBarPotential"></div>
+                <div id="enemyHealthBar" className="healthBar"></div>
+              </div>
             </div>
-            <button onClickCapture={() => handleClick(move1)}>{move1}</button>
-            <button onClickCapture={() => handleClick(move2)}>{move2}</button>
-            <button onClickCapture={() => handleClick(move3)}>{move3}</button>
-            <button onClickCapture={() => handleClick(move4)}>{move4}</button>
-          </div>
-          <div className="playerDiv">
-            <div className="playerName">{starterPokemon?.name}</div>
-            <div>
-              <div className="playerHealthPotential"></div>
-              <div id="playerHealthBar" className="playerHealth"></div>
+          ) : null}
+          <canvas
+            className="canvas"
+            ref={canvasRef}
+            height={height}
+            width={width}
+          />
+          {battleInitiation2 ? (
+            <div className="abilityBar">
+              <div className="buttonDiv">
+                <div
+                  ref={battleText}
+                  onClick={handleDialog}
+                  className="battleText"
+                >
+                  dsadas
+                </div>
+                <button onClickCapture={() => handleClick(move1)}>
+                  {move1}
+                </button>
+                <button onClickCapture={() => handleClick(move2)}>
+                  {move2}
+                </button>
+                <button onClickCapture={() => handleClick(move3)}>
+                  {move3}
+                </button>
+                <button onClickCapture={() => handleClick(move4)}>
+                  {move4}
+                </button>
+              </div>
+              <div className="playerDiv">
+                <div className="playerName">{starterPokemon?.name}</div>
+                <div>
+                  <div className="playerHealthPotential"></div>
+                  <div id="playerHealthBar" className="playerHealth"></div>
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
-      ) : null}
-    </ParentDiv>
+          ) : null}
+        </ParentDiv>
+      </div>
+    </div>
   );
 };
 

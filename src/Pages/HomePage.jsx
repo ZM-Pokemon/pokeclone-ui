@@ -1,22 +1,17 @@
-import axios from "axios";
 import React from "react";
-import { useState } from "react";
-import { useEffect, useRef } from "react";
-import GameCanvas from "../Components/GameCanvas/GameCanvas";
+import { FormControl, InputLabel, Select, MenuItem } from "@mui/material";
 
-const HomePage = () => {
-  const [starterPokemon, setStarterPokemon] = useState();
-  //   const [pokeApi, setPokeApi] = useState();
-
-  useEffect(() => {
-    axios.get("https://pokeapi.co/api/v2/pokemon/charmander").then((res) => {
-      setStarterPokemon(res.data);
-    });
-  }, []);
+const HomePage = ({ starterPokeSearch, setStarterPokeSearch }) => {
+  const handleChange = (e) => {
+    setStarterPokeSearch(e.target.value);
+  };
 
   return (
     <div>
-      <GameCanvas starterPokemon={starterPokemon} />
+      <div>
+        <h1>Welcome to my PokeClone!</h1>
+        <h3>Please enter your name and choose your starter pokemon!</h3>
+      </div>
     </div>
   );
 };
