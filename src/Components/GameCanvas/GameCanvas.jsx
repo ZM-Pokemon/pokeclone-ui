@@ -74,7 +74,7 @@ const GameCanvas = ({ starterPokemon, startPokeSearch }) => {
 
   const victoryMusic = new Howl({
     src: [victoryMusicFile],
-    loop: true,
+    loop: false,
     volume: 0.05,
   });
 
@@ -739,6 +739,7 @@ const GameCanvas = ({ starterPokemon, startPokeSearch }) => {
   }
 
   function handleDialog(e) {
+    victoryMusic.stop();
     if (queue.length > 0) {
       queue[0]();
       queue.shift();
