@@ -56,8 +56,9 @@ const GameCanvas = ({ starterPokemon, startPokeSearch }) => {
   //   const [num, setNum] = useState(1);
 
   useEffect(() => {
+    victoryMusic.stop();
     gameMusic.play();
-  }, []);
+  }, [battleIsFinished]);
   //sounds
   const gameMusic = new Howl({
     src: [gameMusicFile],
