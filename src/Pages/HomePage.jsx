@@ -23,7 +23,8 @@ const HomePage = ({
   const handleSubmit = async (e) => {
     e.preventDefault();
     axios
-      .post("http://localhost:8000/signup", starterPokeSearch)
+      .post("http://pokeclone-zm-api.herokuapp.com//signup", starterPokeSearch)
+      //   .post("http://localhost:8000/signup", starterPokeSearch)
       .then((res) => {
         console.log(res);
         // navigate("/play", { replace: true });
