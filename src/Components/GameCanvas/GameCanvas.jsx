@@ -747,10 +747,10 @@ const GameCanvas = ({ starterPokemon, startPokeSearch }) => {
     } else e.currentTarget.style.display = "none";
   }
 
-  let move1 = starterPokemon?.moves[Math.floor(Math.random() * 99)].move.name;
-  let move2 = starterPokemon?.moves[Math.floor(Math.random() * 99)].move.name;
-  let move3 = starterPokemon?.moves[Math.floor(Math.random() * 99)].move.name;
-  let move4 = starterPokemon?.moves[Math.floor(Math.random() * 99)].move.name;
+  let move1 = starterPokemon?.moves[Math.floor(Math.random() * 70)].move.name;
+  let move2 = starterPokemon?.moves[Math.floor(Math.random() * 70)].move.name;
+  let move3 = starterPokemon?.moves[Math.floor(Math.random() * 70)].move.name;
+  let move4 = starterPokemon?.moves[Math.floor(Math.random() * 70)].move.name;
 
   const handleChange = () => {
     gameMusic.stop();
