@@ -47,7 +47,7 @@ let ParentDiv = styled.div`
   /* pointer-events: none; */
 `;
 
-const GameCanvas = ({ starterPokemon }) => {
+const GameCanvas = ({ starterPokemon, startPokeSearch }) => {
   const [battleInitiation, setBattleInitiation] = useState(false);
   const [battleInitiation2, setBattleInitiation2] = useState(false);
   const [battleIsFinished, setBattleIsFinished] = useState(1);
@@ -59,7 +59,7 @@ const GameCanvas = ({ starterPokemon }) => {
   const gameMusic = new Howl({
     src: [gameMusicFile],
     loop: true,
-    volume: 0.05,
+    volume: 0.03,
   });
 
   const battleMusic = new Howl({
@@ -85,11 +85,11 @@ const GameCanvas = ({ starterPokemon }) => {
 
   setTimeout(() => {
     playerPoke.current = starterPokemon;
+    gameMusic.play();
   }, 3000);
   const pokeTest = [];
   const pokeTest2 = [];
   useEffect(() => {
-    gameMusic.play();
     axios
       .get("https://pokeapi.co/api/v2/pokemon?limit=151&offset=0")
       .then((res) => {
@@ -482,7 +482,7 @@ const GameCanvas = ({ starterPokemon }) => {
             Math.random() < 0.003
           ) {
             window.cancelAnimationFrame(requestRef.current);
-            gameMusic.stop();
+            gameMusic.pause();
             battleMusic.play();
             battle.initiated = true;
             player.moving = false;

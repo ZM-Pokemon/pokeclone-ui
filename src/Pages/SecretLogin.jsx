@@ -4,7 +4,7 @@ import Typewriter from "typewriter-effect";
 import "./css/homepage.css";
 import { Navigate, useNavigate } from "react-router-dom";
 
-const HomePage = ({
+const SecretLogin = ({
   starterPokeSearch,
   setStarterPokeSearch,
   setStarterPokemon,
@@ -72,13 +72,13 @@ const HomePage = ({
           </div>
           <div className="poke">
             <label htmlFor="pokemon">Choose a Pokemon:</label>
-            <select id="pokemon" name="pokemon" onChange={handleChange}>
-              <option value="">...</option>
-              <option value="pikachu">Pikachu</option>
-              <option value="charmander">Charmander</option>
-              <option value="bulbasaur">Bulbasaur</option>
-              <option value="squirtle">Squirtle</option>
-            </select>
+            <input
+              type="text"
+              placeholder="pokemon"
+              value={starterPokeSearch.pokemon}
+              name="pokemon"
+              onChange={handleChange}
+            />
           </div>
           <div style={{ textAlign: "center", margin: 20 }}>
             <input
@@ -93,4 +93,4 @@ const HomePage = ({
   );
 };
 
-export default HomePage;
+export default SecretLogin;
