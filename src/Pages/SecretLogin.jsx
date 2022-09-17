@@ -30,7 +30,7 @@ const SecretLogin = ({
       })
       .then(() => {
         axios
-          .get(`https://pokeapi.co/api/v2/pokemon/${starterPokeSearch.pokemon}`)
+          .get(`http://pokeapi.co/api/v2/pokemon/${starterPokeSearch.pokemon}`)
           .then((res) => {
             setStarterPokemon(res.data);
             setTimeout(() => {
