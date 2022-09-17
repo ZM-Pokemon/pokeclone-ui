@@ -24,14 +24,14 @@ const SecretLogin = ({
     e.preventDefault();
     axios
       //   .post("http://localhost:8000/signup", starterPokeSearch)
-      .post("http://pokeclone-zm-api.herokuapp.com//signup", starterPokeSearch)
+      .post("https://pokeclone-zm-api.herokuapp.com/signup", starterPokeSearch)
       .then((res) => {
         console.log(res);
         // navigate("/play", { replace: true });
       })
       .then(() => {
         axios
-          .get(`http://pokeapi.co/api/v2/pokemon/${starterPokeSearch.pokemon}`)
+          .get(`https://pokeapi.co/api/v2/pokemon/${starterPokeSearch.pokemon}`)
           .then((res) => {
             setStarterPokemon(res.data);
             setTimeout(() => {

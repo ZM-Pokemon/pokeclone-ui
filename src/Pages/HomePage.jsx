@@ -23,7 +23,7 @@ const HomePage = ({
   const handleSubmit = async (e) => {
     e.preventDefault();
     axios
-      .post("http://pokeclone-zm-api.herokuapp.com//signup", starterPokeSearch)
+      .post("https://pokeclone-zm-api.herokuapp.com/signup", starterPokeSearch)
       //   .post("http://localhost:8000/signup", starterPokeSearch)
       .then((res) => {
         console.log(res);
@@ -31,7 +31,7 @@ const HomePage = ({
       })
       .then(() => {
         axios
-          .get(`http://pokeapi.co/api/v2/pokemon/${starterPokeSearch.pokemon}`)
+          .get(`https://pokeapi.co/api/v2/pokemon/${starterPokeSearch.pokemon}`)
           .then((res) => {
             setStarterPokemon(res.data);
             setTimeout(() => {
