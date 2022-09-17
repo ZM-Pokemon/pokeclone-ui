@@ -55,6 +55,9 @@ const GameCanvas = ({ starterPokemon, startPokeSearch }) => {
   const [battlePoke, setBattlePoke] = useState();
   //   const [num, setNum] = useState(1);
 
+  useEffect(() => {
+    gameMusic.play();
+  }, []);
   //sounds
   const gameMusic = new Howl({
     src: [gameMusicFile],
@@ -85,7 +88,7 @@ const GameCanvas = ({ starterPokemon, startPokeSearch }) => {
 
   setTimeout(() => {
     playerPoke.current = starterPokemon;
-    gameMusic.play();
+    // gameMusic.play();
   }, 3000);
   const pokeTest = [];
   const pokeTest2 = [];
