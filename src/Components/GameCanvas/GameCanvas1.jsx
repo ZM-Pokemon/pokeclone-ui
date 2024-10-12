@@ -15,6 +15,7 @@ import { Howl, Howler } from "howler";
 import gameMusicFile from "../../Assets/102-palette town theme.mp3";
 import battleMusicFile from "../../Assets/107-battle (vs wild pokemon).mp3";
 import victoryMusicFile from "../../Assets/108-victory (vs wild pokemon).mp3";
+import { Switch, FormControlLabel, useForkRef } from "@mui/material";
 import gsap from "gsap";
 import "./styles.css";
 
@@ -51,32 +52,27 @@ const GameCanvas = ({ starterPokemon, startPokeSearch }) => {
   const [battleInitiation2, setBattleInitiation2] = useState(false);
   const [battleIsFinished, setBattleIsFinished] = useState(1);
   const [musicPhase, setMusicPhase] = useState(1);
+
   const [battlePoke, setBattlePoke] = useState();
-
-  //sounds
-
-  const battleMusic = useRef();
-  const gameMusic = useRef();
-  const victoryMusic = useRef();
 
   useEffect(() => {
     //sounds
     gameMusic.current = new Howl({
       src: [gameMusicFile],
       loop: true,
-      volume: 0.01,
+      volume: 0.03,
     });
 
     battleMusic.current = new Howl({
       src: [battleMusicFile],
       loop: true,
-      volume: 0.01,
+      volume: 0.03,
     });
 
     victoryMusic.current = new Howl({
       src: [victoryMusicFile],
       loop: false,
-      volume: 0.01,
+      volume: 0.03,
     });
   }, []);
 
@@ -93,10 +89,6 @@ const GameCanvas = ({ starterPokemon, startPokeSearch }) => {
     }
   }, [musicPhase]);
 
-  //   function randomNumberInRange(min, max) {
-  //     // 👇️ get number between min (inclusive) and max (inclusive)
-  //     return Math.floor(Math.random() * (max - min + 1)) + min;
-  //   }
   const playerPoke = useRef();
   const opponent = useRef();
   const playerPokeSprite = useRef();
@@ -132,6 +124,9 @@ const GameCanvas = ({ starterPokemon, startPokeSearch }) => {
   const battleDivRef = useRef();
   const requestRef = useRef();
   const requestBattleRef = useRef();
+  const battleMusic = useRef();
+  const gameMusic = useRef();
+  const victoryMusic = useRef();
 
   let width = 700;
   let height = 467;
@@ -338,8 +333,6 @@ const GameCanvas = ({ starterPokemon, startPokeSearch }) => {
       }
 
       faint() {
-        // battleMusic.stop();
-        // victoryMusic.play();
         battleText.current.innerHTML = this.name + " fainted!";
         gsap.to(this.position, {
           y: this.position.y + 20,
@@ -347,7 +340,7 @@ const GameCanvas = ({ starterPokemon, startPokeSearch }) => {
         gsap.to(this, {
           opacity: 0,
         });
-        // setMusicPhase(3);
+        setMusicPhase(3);
       }
 
       draw() {
@@ -502,8 +495,6 @@ const GameCanvas = ({ starterPokemon, startPokeSearch }) => {
             Math.random() < 0.003
           ) {
             window.cancelAnimationFrame(requestRef.current);
-            // gameMusic.pause();
-            // battleMusic.play();
             setMusicPhase(2);
             battle.initiated = true;
             player.moving = false;
@@ -655,20 +646,6 @@ const GameCanvas = ({ starterPokemon, startPokeSearch }) => {
     const battleImg = new Image();
     const playerPokeImg = new Image();
 
-    // const opponent = new Sprite({
-    //   position: {
-    //     x: 470,
-    //     y: 110,
-    //   },
-    //   image: battleImg || "",
-    // });
-    // const playerPokeSprite = new Sprite({
-    //   position: {
-    //     x: 140,
-    //     y: 240,
-    //   },
-    //   image: playerPokeImg || "",
-    // });
     opponent.current = new Sprite({
       position: {
         x: 470,
@@ -689,6 +666,7 @@ const GameCanvas = ({ starterPokemon, startPokeSearch }) => {
       requestBattleRef.current = window.requestAnimationFrame(animateBattle);
       battleBackground.draw();
       opponent?.current.draw();
+
       playerPokeSprite.current.draw();
     }
   }, [battleIsFinished]);
@@ -706,21 +684,13 @@ const GameCanvas = ({ starterPokemon, startPokeSearch }) => {
   const finishBattle = () => {
     setBattleInitiation(false);
     setBattleInitiation2(false);
-    setMusicPhase(1);
     setBattleIsFinished(Math.floor(Math.random() * 4094109274824));
     // animateLoop.current();
     cancelAnimationFrame(requestBattleRef.current);
+    setMusicPhase(1);
   };
   //   let wasClicked = false;
   function handleClick(move) {
-    // if (wasClicked) {
-    //   return;
-    // }
-    // wasClicked = true;
-    // setTimeout(() => {
-    //   wasClicked = false;
-    // }, 2000);
-
     playerPokeSprite.current.attack({
       attack: {
         name: move,
@@ -731,11 +701,10 @@ const GameCanvas = ({ starterPokemon, startPokeSearch }) => {
 
     if (opponent.current.health <= 0) {
       queue.push(() => {
-        // opponent.current.faint();
-        handleFaint();
-      });
-      queue.push(() => {
-        finishBattle();
+        opponent.current.faint();
+        queue.push(() => {
+          finishBattle();
+        });
       });
     }
 
@@ -756,19 +725,10 @@ const GameCanvas = ({ starterPokemon, startPokeSearch }) => {
       //   return;
     }
   }
-
-  function handleFaint() {
-    opponent.current.faint();
-    setMusicPhase(3);
-  }
+  console.log(queue);
 
   function handleDialog(e) {
-    console.log(queue);
-    if (queue.length > 2 && opponent.current.health <= 0) {
-      queue.splice(2, 2);
-      queue[0]();
-      queue.shift();
-    } else if (queue.length > 0) {
+    if (queue.length > 0) {
       queue[0]();
       queue.shift();
       opponentMove = opponentMoves[Math.floor(Math.random() * 4)];
@@ -780,11 +740,11 @@ const GameCanvas = ({ starterPokemon, startPokeSearch }) => {
   let move3 = starterPokemon?.moves[Math.floor(Math.random() * 70)].move.name;
   let move4 = starterPokemon?.moves[Math.floor(Math.random() * 70)].move.name;
 
-  //   const handleChange = () => {
-  //     gameMusic.stop();
-  //     battleMusic.stop();
-  //     victoryMusic.stop();
-  //   };
+  // const handleChange = () => {
+  //   gameMusic.stop();
+  //   battleMusic.stop();
+  //   victoryMusic.stop();
+  // };
 
   return (
     <div className="centered">
@@ -822,7 +782,6 @@ const GameCanvas = ({ starterPokemon, startPokeSearch }) => {
                 >
                   dsadas
                 </div>
-
                 <button onClickCapture={() => handleClick(move1)}>
                   {move1}
                 </button>

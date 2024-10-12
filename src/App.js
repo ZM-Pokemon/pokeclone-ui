@@ -1,5 +1,5 @@
 import "./App.css";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, HashRouter } from "react-router-dom";
 import GameCanvas from "./Components/GameCanvas/GameCanvas";
 import GamePage from "./Pages/GamePage";
 import { useState } from "react";
@@ -15,38 +15,40 @@ function App() {
   const [starterPokemon, setStarterPokemon] = useState();
 
   return (
-    <Routes>
-      <Route
-        path="/"
-        element={
-          <HomePage
-            setStarterPokeSearch={setStarterPokeSearch}
-            starterPokeSearch={starterPokeSearch}
-            setStarterPokemon={setStarterPokemon}
-          />
-        }
-      />
-      <Route
-        path="/secretlogin"
-        element={
-          <SecretLogin
-            setStarterPokeSearch={setStarterPokeSearch}
-            starterPokeSearch={starterPokeSearch}
-            setStarterPokemon={setStarterPokemon}
-          />
-        }
-      />
+    <HashRouter>
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <HomePage
+              setStarterPokeSearch={setStarterPokeSearch}
+              starterPokeSearch={starterPokeSearch}
+              setStarterPokemon={setStarterPokemon}
+            />
+          }
+        />
+        <Route
+          path="/secretlogin"
+          element={
+            <SecretLogin
+              setStarterPokeSearch={setStarterPokeSearch}
+              starterPokeSearch={starterPokeSearch}
+              setStarterPokemon={setStarterPokemon}
+            />
+          }
+        />
 
-      <Route
-        path="/play"
-        element={
-          <GamePage
-            starterPokemon={starterPokemon}
-            // starterPokeSearch={starterPokeSearch}
-          />
-        }
-      />
-    </Routes>
+        <Route
+          path="/play"
+          element={
+            <GamePage
+              starterPokemon={starterPokemon}
+              // starterPokeSearch={starterPokeSearch}
+            />
+          }
+        />
+      </Routes>
+    </HashRouter>
   );
 }
 

@@ -23,21 +23,12 @@ const SecretLogin = ({
   const handleSubmit = async (e) => {
     e.preventDefault();
     axios
-      //   .post("http://localhost:8000/signup", starterPokeSearch)
-      .post("https://pokeclone-zm-api.herokuapp.com/signup", starterPokeSearch)
+      .get(`https://pokeapi.co/api/v2/pokemon/${starterPokeSearch.pokemon}`)
       .then((res) => {
-        console.log(res);
-        // navigate("/play", { replace: true });
-      })
-      .then(() => {
-        axios
-          .get(`https://pokeapi.co/api/v2/pokemon/${starterPokeSearch.pokemon}`)
-          .then((res) => {
-            setStarterPokemon(res.data);
-            setTimeout(() => {
-              navigate("/play", { replace: true });
-            }, 2000);
-          });
+        setStarterPokemon(res.data);
+        setTimeout(() => {
+          navigate("/play", { replace: true });
+        }, 2000);
       });
   };
 
