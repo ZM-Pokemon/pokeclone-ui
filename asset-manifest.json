@@ -1,0 +1,21 @@
+{
+  "files": {
+    "main.css": "/pokeclone/static/css/main.f64e0fdf.css",
+    "main.js": "/pokeclone/static/js/main.dd4c9aa8.js",
+    "static/js/787.37f5fb1c.chunk.js": "/pokeclone/static/js/787.37f5fb1c.chunk.js",
+    "static/media/107-battle (vs wild pokemon).mp3": "/pokeclone/static/media/107-battle (vs wild pokemon).d84c6ca2dbb4f92dec17.mp3",
+    "static/media/102-palette town theme.mp3": "/pokeclone/static/media/102-palette town theme.9a6c0cf2c2e859dad4e2.mp3",
+    "static/media/108-victory (vs wild pokemon).mp3": "/pokeclone/static/media/108-victory (vs wild pokemon).60a71aedf81efb1a6c17.mp3",
+    "static/media/MAP.png": "/pokeclone/static/media/MAP.373ead7ca280a7473311.png",
+    "static/media/ppokebattle.png": "/pokeclone/static/media/ppokebattle.e84581f8056b002222af.png",
+    "static/media/pngwing.com.png": "/pokeclone/static/media/pngwing.com.bbac39a1b23ab96181ac.png",
+    "index.html": "/pokeclone/index.html",
+    "main.f64e0fdf.css.map": "/pokeclone/static/css/main.f64e0fdf.css.map",
+    "main.dd4c9aa8.js.map": "/pokeclone/static/js/main.dd4c9aa8.js.map",
+    "787.37f5fb1c.chunk.js.map": "/pokeclone/static/js/787.37f5fb1c.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.f64e0fdf.css",
+    "static/js/main.dd4c9aa8.js"
+  ]
+}
